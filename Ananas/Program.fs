@@ -1,7 +1,17 @@
 ﻿[<EntryPoint>]
-let main argv =
-    let lexer = Lexer.lex <| Seq.toList "((("
-    printfn "%A" <| lexer ()
-    printfn "%A" <| lexer ()
-    printfn "%A" <| lexer ()
-    0 // return an integer exit code
+let main _ =
+    let lexer = Lexer.lex "(+ i 3.14 \"Hello\" 12324) ((("
+
+    let rec lexUntilEnd () =
+        let token = lexer ()
+
+        match token with
+        | Lexer.Token.None ->
+            printfn "End."
+        | _ ->
+            printfn "%A" token
+            lexUntilEnd ()
+
+    lexUntilEnd ()
+
+    0
