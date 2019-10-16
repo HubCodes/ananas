@@ -70,7 +70,6 @@ let lex (code: string) =
                 token <- Token.None
                 doLex ()
             | (head, LexerState.Start) when isSpace head ->
-                state <- LexerState.Start
                 lexeme <- ""
                 token <- Token.None
                 doLex ()
@@ -85,49 +84,40 @@ let lex (code: string) =
                 token <- Token.None
                 doLex ()
             | (head, LexerState.Start) when isParenthesis head ->
-                state <- LexerState.Start
                 lexeme <- head.ToString ()
                 token <- parenthesisCharacterToToken head
                 token
             | (head, LexerState.Name) when isName head ->
-                state <- LexerState.Name
                 lexeme <- lexeme + head.ToString ()
                 token <- Token.None
                 doLex ()
             | (head, LexerState.Name) when isSpace head ->
                 state <- LexerState.Start
-                lexeme <- lexeme
                 token <- Token.Name lexeme
                 token
             | (head, LexerState.Name) when isParenthesis head ->
                 state <- LexerState.Start
-                lexeme <- lexeme
                 token <- Token.Name lexeme
                 code <- head :: tail
                 token
             | (head, LexerState.String) when isQuote head ->
                 state <- LexerState.Start
-                lexeme <- lexeme
                 token <- Token.String lexeme
                 token
             | (head, LexerState.String) when not <| isNewline head ->
-                state <- LexerState.String
                 lexeme <- lexeme + head.ToString ()
                 token <- Token.None
                 doLex ()
             | (head, LexerState.NumberInteger) when isDigit head ->
-                state <- LexerState.NumberInteger
                 lexeme <- lexeme + head.ToString ()
                 token <- Token.None
                 doLex ()
             | (head, LexerState.NumberInteger) when isSpace head ->
                 state <- LexerState.Start
-                lexeme <- lexeme
                 token <- Token.Integer <| Convert.ToInt32 lexeme
                 token
             | (head, LexerState.NumberInteger) when isParenthesis head ->
                 state <- LexerState.Start
-                lexeme <- lexeme
                 token <- Token.Integer <| Convert.ToInt32 lexeme
                 code <- head :: tail
                 token
@@ -137,18 +127,15 @@ let lex (code: string) =
                 token <- Token.None
                 doLex ()
             | (head, LexerState.NumberReal) when isDigit head ->
-                state <- LexerState.NumberReal
                 lexeme <- lexeme + head.ToString ()
                 token <- Token.None
                 doLex ()
             | (head, LexerState.NumberReal) when isSpace head ->
                 state <- LexerState.Start
-                lexeme <- lexeme
                 token <- Token.Double <| Convert.ToDouble lexeme
                 token
             | (head, LexerState.NumberReal) when isParenthesis head ->
                 state <- LexerState.Start
-                lexeme <- lexeme
                 token <- Token.Double <| Convert.ToDouble lexeme
                 code <- head :: tail
                 token
