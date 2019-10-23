@@ -47,6 +47,9 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <Compile Include="AST.fs" />
+    <None Include="Lexer.fsl" />
+    <None Include="Parser.fsy" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
