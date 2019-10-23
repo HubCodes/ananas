@@ -1,0 +1,74 @@
+﻿{
+module Lexer
+
+open System
+open System.Text
+open System.Collections
+open Parser
+open FSharp.Text.Lexing
+
+let keywordLookupTable =
+	Map.ofList [
+		"def", KW_DEF
+		"var", KW_VAR
+		"if", KW_IF
+		"else", KW_ELSE
+		"for", KW_FOR
+		"break", KW_BREAK
+		"continue", KW_CONTINUE
+		"return", KW_RETURN
+	]
+
+let newline (lexbuf: LexBuffer<_>) =
+	lexbuf.EndPos <- lexbuf.EndPos.NextLine
+
+let lexeme (lexbuf: LexBuffer<_>) =
+	LexBuffer<_>.LexemeString lexbuf
+
+let keywordOrId str =
+	match Map.TryFind str with
+	| Some keyword -> keyword
+	| None -> ID str
+}
+
+let id = ['a'-'z' 'A'-'Z' '_' '$']['a'-'z' 'A'-'Z' '0'-'9' '_' '$']*
+let digit = ['0'-'9']
+let integer = digit+
+let double = digit+ ('.'digit+)?
+let string = '"'.*'"'
+let whitespace = [' ' '\t']
+let newline = "\r\n" | '\n' | '\r'
+
+rule tokenize = parse
+| whitespace	{ tokenize lexbuf }
+| newline		{ newline lexbuf; tokenize lexbuf; }
+| '('			{ OPEN_PAREN }
+| ')'			{ CLOSE_PAREN }
+| '{'			{ OPEN_BLOCK }
+| '}'			{ CLOSE_BLOCK }
+| ','			{ COMMA }
+| ':'			{ COLON }
+| ';'			{ SEMICOLON }
+| "=="			{ OP_EQ }
+| "!="			{ OP_NEQ }
+| '+'			{ OP_ADD }
+| '-'			{ OP_SUB }
+| '*'			{ OP_MUL }
+| '/'			{ OP_DIV }
+| '%'			{ OP_MOD }
+| '='			{ OP_ASSIGN }
+| '&'			{ OP_BITAND }
+| '|'			{ OP_BITOR }
+| '~'			{ OP_BITNOT }
+| '^'			{ OP_BITXOR }
+| "&&"			{ OP_AND }
+| "||"			{ OP_OR }
+| '!'			{ OP_NOT }
+| ">="			{ OP_GTE }
+| "<="			{ OP_LTE }
+| '>'			{ OP_GT }
+| '<'			{ OP_LT }
+| id			{ keywordOrId <| lexeme lexbuf }
+| integer		{ INT <| Convert.ToInt32 <| lexeme lexbuf }
+| double		{ Number <| Convert.ToDouble <| lexeme lexbuf }
+| string		{ String <| lexeme lexbuf }

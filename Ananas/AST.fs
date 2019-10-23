@@ -3,7 +3,8 @@
 type Program = Stmt list
 
 and Stmt =
-    | For of init: Expr * cond: Expr * incr: Expr * body: Stmt
+    | Block of Stmt list
+    | For of init: Expr option * cond: Expr option * incr: Expr option * body: Stmt
     | While of cond: Expr * body: Stmt
     | Break
     | Continue
@@ -27,8 +28,10 @@ and Primary =
     | Var of string
     | Int of int
     | Double of double
+    | String of string
 
 and Binop =
+    | Assign
     | Add
     | Sub
     | Mul
@@ -39,7 +42,8 @@ and Binop =
     | Bitand
     | Bitor
     | Bitxor
-    | Exp
+    | Eq
+    | Neq
     | Gt
     | Lt
     | Gte
@@ -48,4 +52,3 @@ and Binop =
 and Unop =
     | Not
     | Bitnot
-    | Minus
