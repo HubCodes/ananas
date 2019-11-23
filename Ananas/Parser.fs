@@ -66,6 +66,7 @@ and parseExpr = parse {
       parseLiteral
       parseLet
       parseVar
+      pstring "(" >>. parseExpr .>> pstring ")"
     ]
 }
 
