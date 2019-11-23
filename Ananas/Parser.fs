@@ -6,7 +6,7 @@ open AST
 
 #nowarn "40"
 
-let skipWs = manyChars <| pchar ' '
+let skipWs = spaces
 
 let stringToBinOperator = function
   | "+" -> Add
@@ -19,6 +19,11 @@ let stringToBinOperator = function
   | "=" -> Eq
   | "!=" -> Neq
   | str -> failwithf "%s is not an operator." str
+
+let isKeyword x =
+  match x with
+  | "let" -> true
+  | _ -> false
 
 let rec parseInt = pint32 .>> skipWs |>> Int
 
@@ -34,7 +39,17 @@ and parseString =
 
 and parseLiteral = parseInt <|> parseBool <|> parseString
 
-and parseVar = identifier <| IdentifierOptions () .>> skipWs |>> Var
+and parseIdentifier =
+  (attempt (identifier <| IdentifierOptions () >>= (fun str ->
+    if not (isKeyword str) then preturn str .>> skipWs else pzero)))
+
+and parseVar = parseIdentifier |>> ID |>> Var
+
+and parseLet =
+  ((pstring "let ") >>. parseIdentifier |>> ID)
+  .>>. ((pstring "=" >>. skipWs) >>. parseExpr)
+  .>>. ((pstring "in" >>. skipWs) >>. parseExpr)
+  |>> (fun ((name, expr1), expr2) -> Let (name, expr1, expr2))
 
 and parseFuncDec =
   (pstring "\\" >>. parseVar)
@@ -45,12 +60,13 @@ and parseOperation = new OperatorPrecedenceParser<Expr, string, unit>()
 
 and parseExpr = parse {
   return! choice
-      [
-          parseFuncDec
-          parseOperation.ExpressionParser
-          parseLiteral
-          parseVar
-      ]
+    [
+      parseFuncDec
+      parseOperation.ExpressionParser
+      parseLiteral
+      parseLet
+      parseVar
+    ]
 }
 
 parseOperation.TermParser <- parseLiteral <|> parseVar <|> parseFuncDec
