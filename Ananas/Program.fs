@@ -1,10 +1,19 @@
-﻿open FParsec
+﻿open System
+open FParsec
 open Parser
 
 [<EntryPoint>]
 let main argv =
-  let result =
-    match parseProgram "let y = \\x -> x = 1 in let zzz = 1 in (y zzz)" with
-    | Success (result, startPos, endPos) -> printfn "%A" result
-    | Failure (message, parseError, _) -> printfn "%s" message
+  let rec repl () =
+    printf ">>= "
+    let code = Console.ReadLine ()
+    if code = "" then repl () else
+    let ast = parseProgram code
+
+    match ast with
+    | Success (ast, _, _) -> printfn "%A" ast
+    | Failure (message, _, _) -> printfn "%A" message
+
+    repl ()
+  repl ()
   0 // return an integer exit code
