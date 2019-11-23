@@ -5,7 +5,8 @@ type Expr =
     | Bool of bool
     | String of string
     | Binop of left: Expr * op: BinOperator * right: Expr
-    | FuncDec of ID * Expr
+    | Var of ID
+    | FuncDec of arg: Expr * body: Expr
     | FuncCall of Expr * Expr
 
 and ID = string

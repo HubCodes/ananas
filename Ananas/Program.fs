@@ -1,8 +1,13 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
+open FParsec
+open Parser
 
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
+    let result =
+        match parseProgram "\\x->y" with
+        | Success (result, startPos, endPos) -> printfn "%A" result
+        | Failure (message, parseError, _) -> printfn "%s" message
     0 // return an integer exit code
