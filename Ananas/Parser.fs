@@ -56,6 +56,9 @@ and parseFuncDec =
   .>>. (pstring "->" .>> skipWs >>. parseExpr)
   |>> FuncDec
 
+and parseFuncCall =
+  pstring "(" >>. parseExpr .>>. parseExpr .>> pstring ")" |>> FuncCall
+
 and parseOperation = new OperatorPrecedenceParser<Expr, string, unit>()
 
 and parseExpr = parse {
@@ -65,6 +68,7 @@ and parseExpr = parse {
       parseOperation.ExpressionParser
       parseLiteral
       parseLet
+      parseFuncCall
       parseVar
       pstring "(" >>. parseExpr .>> pstring ")"
     ]
