@@ -8,18 +8,6 @@ open AST
 
 let skipWs = spaces
 
-let stringToBinOperator = function
-  | "+" -> Add
-  | "-" -> Sub
-  | "*" -> Mul
-  | "/" -> Div
-  | "%" -> Mod
-  | ">" -> Gt
-  | "<" -> Lt
-  | "=" -> Eq
-  | "!=" -> Neq
-  | str -> failwithf "%s is not an operator." str
-
 let isKeyword x =
   match x with
   | "let" -> true
@@ -88,7 +76,7 @@ let addSymbolicInfixOperators prefix precedence associativity =
       associativity,
       (),
       fun remOpChars expr1 expr2 ->
-        Binop (expr1, stringToBinOperator (prefix + remOpChars), expr2))
+        Binop (expr1, ID (prefix + remOpChars), expr2))
   parseOperation.AddOperator (op)
 
 addSymbolicInfixOperators "+" 10 Associativity.Left
