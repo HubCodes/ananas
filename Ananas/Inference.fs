@@ -34,10 +34,10 @@ let rec exprToMeta ast (context: Env) =
     let newType = getNextType ()
     MetaLet (id, metaLeft, metaRight, newType)
   | AST.FuncDec (arg, body) ->
-    // let argType = getNextType ()
-    // let newContext = context.Add (arg, argType)
-    let metaBody = exprToMeta body context // newContext
-    let typ = Map.find arg context
+    let argType = getNextType ()
+    let newContext = context.Add (arg, argType)
+    let metaBody = exprToMeta body newContext
+    let typ = Map.find arg newContext
     MetaFuncDec (arg, metaBody, Function1 (typ, getNextType ()))
   | AST.FuncCall (fn, arg) ->
     let metaFn = exprToMeta fn context
