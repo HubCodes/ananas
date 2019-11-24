@@ -12,7 +12,7 @@ type Expr =
   | FuncDec of arg: ID * body: Expr
   | FuncCall of Expr * Expr
 
-and ID = ID of string
+and ID = string
 
 type MetaExpr =
   | MetaInt of int * Type

@@ -31,16 +31,16 @@ and parseIdentifier =
   (attempt (identifier <| IdentifierOptions () >>= (fun str ->
     if not (isKeyword str) then preturn str .>> skipWs else pzero)))
 
-and parseVar = parseIdentifier |>> ID |>> Var
+and parseVar = parseIdentifier |>> Var
 
 and parseLet =
-  ((pstring "let ") >>. parseIdentifier |>> ID)
+  ((pstring "let ") >>. parseIdentifier)
   .>>. ((pstring "=" >>. skipWs) >>. parseExpr)
   .>>. ((pstring "in" >>. skipWs) >>. parseExpr)
   |>> (fun ((name, expr1), expr2) -> Let (name, expr1, expr2))
 
 and parseFuncDec =
-  (pstring "\\" >>. parseIdentifier |>> ID)
+  (pstring "\\" >>. parseIdentifier)
   .>>. (pstring "->" .>> skipWs >>. parseExpr)
   |>> FuncDec
 
@@ -76,7 +76,7 @@ let addSymbolicInfixOperators prefix precedence associativity =
       associativity,
       (),
       fun remOpChars expr1 expr2 ->
-        Binop (expr1, ID (prefix + remOpChars), expr2))
+        Binop (expr1, prefix + remOpChars, expr2))
   parseOperation.AddOperator (op)
 
 addSymbolicInfixOperators "+" 10 Associativity.Left
