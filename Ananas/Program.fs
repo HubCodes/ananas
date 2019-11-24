@@ -1,6 +1,7 @@
 ﻿open System
 open FParsec
 open Parser
+open Inference
 
 [<EntryPoint>]
 let main argv =
@@ -11,7 +12,9 @@ let main argv =
     let ast = parseProgram code
 
     match ast with
-    | Success (ast, _, _) -> printfn "%A" ast
+    | Success (ast, _, _) ->
+      let metaExpr = analyze ast Map.empty
+      printfn "%A" metaExpr
     | Failure (message, _, _) -> printfn "%A" message
 
     repl ()
