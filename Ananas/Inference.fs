@@ -38,11 +38,13 @@ let rec exprToMeta ast (context: Env) =
     let newContext = context.Add (arg, argType)
     let metaBody = exprToMeta body newContext
     let typ = Map.find arg newContext
-    MetaFuncDec (arg, metaBody, Function1 (typ, getNextType ()))
+    MetaFuncDec (arg, metaBody, Function1 (typ, getTypeFromMeta metaBody)) // getNextType ()
   | AST.FuncCall (fn, arg) ->
     let metaFn = exprToMeta fn context
     let metaArg = exprToMeta arg context in
     MetaFuncCall (metaFn, metaArg, getNextType ())
 
 let analyze ast context =
-  exprToMeta ast context
+  let result = exprToMeta ast context
+  nextTypeChar := int 'a'
+  result
