@@ -40,7 +40,7 @@ and parseLet =
   |>> (fun ((name, expr1), expr2) -> Let (name, expr1, expr2))
 
 and parseFuncDec =
-  (pstring "\\" >>. parseVar)
+  (pstring "\\" >>. parseIdentifier |>> ID)
   .>>. (pstring "->" .>> skipWs >>. parseExpr)
   |>> FuncDec
 
